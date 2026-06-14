@@ -1,0 +1,39 @@
+name: Security Scan (Dockerized)
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-24.04
+
+    env:
+      CODESEER_VERSION: v24
+      SELF_CONTAINED: 1
+      FAIL_ON: MEDIUM
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Pull CodeSeer Image
+        run: docker pull ghcr.io/grigorescustefan/codeseer:${CODESEER_VERSION}
+
+      - name: Run CodeSeer
+        run: |
+          docker run --rm \
+            -e SELF_CONTAINED=${SELF_CONTAINED} \
+            -e FAIL_ON=${FAIL_ON} \
+            -v ${{ github.workspace }}/samples:/input \
+            -v ${{ github.workspace }}/reports:/output \
+            ghcr.io/grigorescustefan/codeseer:${CODESEER_VERSION}
+
+      - name: Upload Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: reports/
