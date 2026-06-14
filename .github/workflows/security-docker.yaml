@@ -27,7 +27,7 @@ jobs:
           docker run --rm \
             -e SELF_CONTAINED=${SELF_CONTAINED} \
             -e FAIL_ON=${FAIL_ON} \
-            -v ${{ github.workspace }}/samples:/input \
+            -v ${{ github.workspace }}/src-code:/input \
             -v ${{ github.workspace }}/reports:/output \
             ghcr.io/grigorescustefan/codeseer:${CODESEER_VERSION}
 
