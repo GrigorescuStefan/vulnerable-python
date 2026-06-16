@@ -1,17 +1,24 @@
-# command_runner.py
-
-import os
+import subprocess
 
 def run_diagnostics(target_host):
     print(f"Running diagnostics on {target_host}")
 
-    # VULNERABILITY: command injection
-    command = "ping -c 3 " + target_host
-    result = os.system(command)
+    # FIX: no shell injection
+    result = subprocess.run(
+        ["ping", "-c", "3", target_host],
+        capture_output=True,
+        text=True
+    )
 
-    return result
+    return result.stdout
 
 
 def backup_system(path):
-    # VULNERABILITY: unsafe shell usage
-    os.system("tar -czf backup.tar.gz " + path)
+    # FIX: safe subprocess usage
+    result = subprocess.run(
+        ["tar", "-czf", "backup.tar.gz", path],
+        capture_output=True,
+        text=True
+    )
+
+    return result.returncode
