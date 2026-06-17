@@ -1,20 +1,18 @@
-# auth_service.py
-
 import sqlite3
 
 def authenticate_user(username, password):
     conn = sqlite3.connect("users.db")
     cursor = conn.cursor()
 
-    # VULNERABILITY: SQL injection via string concatenation
-    query = f"""
+    # FIX: parameterized query
+    query = """
     SELECT id, username, role
     FROM users
-    WHERE username = '{username}'
-    AND password = '{password}'
+    WHERE username = ?
+    AND password = ?
     """
 
-    cursor.execute(query)
+    cursor.execute(query, (username, password))
     result = cursor.fetchone()
 
     if result:
