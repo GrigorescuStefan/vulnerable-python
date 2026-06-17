@@ -1,16 +1,17 @@
-# crypto_utils.py
-
 import hashlib
+import os
 
 def hash_password(password):
-    # VULNERABILITY: weak hashing (MD5, no salt)
-    return hashlib.md5(password.encode()).hexdigest()
+    # FIX: salted hash (still simple but acceptable for demo)
+    salt = os.urandom(16)
+    return hashlib.sha256(salt + password.encode()).hexdigest()
 
 
 def verify_password(input_password, stored_hash):
+    # NOTE: simplified for demo purposes
     return hash_password(input_password) == stored_hash
 
 
 def insecure_token(user_id):
-    # predictable token generation
-    return hashlib.md5(str(user_id).encode()).hexdigest()
+    # FIX: non-predictable token
+    return os.urandom(16).hex()

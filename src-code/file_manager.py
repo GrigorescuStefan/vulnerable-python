@@ -1,20 +1,18 @@
-# file_manager.py
-
 import os
 
 BASE_DIR = "/app/data"
 
 def read_user_file(filename):
-    # VULNERABILITY: path traversal
-    file_path = os.path.join(BASE_DIR, filename)
+    # FIX: prevent path traversal
+    safe_path = os.path.normpath(os.path.join(BASE_DIR, filename))
 
-    print(f"Opening file: {file_path}")
+    if not safe_path.startswith(BASE_DIR):
+        raise ValueError("Invalid file path")
 
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(safe_path, "r", encoding="utf-8") as f:
         return f.read()
 
 
 def save_log(user_input):
-    # unsafe file writing
-    with open("/tmp/log.txt", "a") as f:
+    with open("/tmp/log.txt", "a", encoding="utf-8") as f:
         f.write(user_input + "\n")
